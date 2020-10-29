@@ -25,10 +25,10 @@ public class Food implements Entity<Long> {
     @Column(name = "description")
     private String description;
 
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "image")
-    private byte[] image;
+//    @Lob
+//    @Basic(fetch = FetchType.LAZY)
+//    @Column(name = "image")
+//    private byte[] image;
 
     @ManyToMany
     @JoinTable(

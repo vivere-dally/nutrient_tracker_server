@@ -5,6 +5,8 @@ import com.ubb.ppd.service.MealService;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -26,6 +28,8 @@ public class MealController {
             @ApiResponse(code = 500, message = "System Error")
     })
     @ApiOperation(value = "returns the meal by the specified id", response = MealDTO.class, produces = MediaType.APPLICATION_JSON_VALUE)
+//    @MessageMapping("")
+//    @SendTo("/meal/notification")
     @GetMapping("/{id}")
     public MealDTO getMealById(
             @ApiParam(name = "id", type = "long", value = "ID of the meal", example = "1")
@@ -86,12 +90,9 @@ public class MealController {
     @DeleteMapping("/{id}")
     public MealDTO deleteMeal(
             @ApiParam(name = "id", type = "long", value = "ID of the meal", example = "1")
-            @PathVariable Long id,
-            @ApiParam(name = "mealDTO", type = "MealDTO")
-            @RequestBody MealDTO mealDTO
+            @PathVariable Long id
     ) {
         log.debug("Entered class = MealService & method = deleteMeal");
-        mealDTO.setId(id);
-        return this.mealService.deleteMeal(mealDTO);
+        return this.mealService.deleteMeal(this.mealService.getMealById(id));
     }
 }

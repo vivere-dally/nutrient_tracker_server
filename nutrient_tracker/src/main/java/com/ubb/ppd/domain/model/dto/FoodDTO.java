@@ -23,8 +23,8 @@ public class FoodDTO implements DTO<Food, Long> {
     @ApiModelProperty(required = true, example = "red apple", value = "description")
     private String description;
 
-    @ApiModelProperty(example = "null", value = "image")
-    private byte[] image;
+//    @ApiModelProperty(example = "null", value = "image")
+//    private byte[] image;
 
     @ApiModelProperty(required = true, example = "[4, 2, 0]", value = "nutrientIds")
     private List<Long> nutrientIds;
@@ -33,7 +33,7 @@ public class FoodDTO implements DTO<Food, Long> {
         this.id = food.getId();
         this.name = food.getName();
         this.description = food.getDescription();
-        this.image = food.getImage();
+//        this.image = food.getImage();
         this.nutrientIds = food.getNutrients()
                 .stream()
                 .map(Nutrient::getId)
@@ -46,7 +46,7 @@ public class FoodDTO implements DTO<Food, Long> {
         food.setId(this.id);
         food.setName(this.name);
         food.setDescription(this.description);
-        food.setImage(this.image);
+//        food.setImage(this.image);
 
         return food;
     }
