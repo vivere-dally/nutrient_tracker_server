@@ -18,6 +18,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(@NonNull WebSocketHandlerRegistry webSocketHandlerRegistry) {
-        webSocketHandlerRegistry.addHandler(this.socketHandler, "/meal/notification");
+        webSocketHandlerRegistry.addHandler(this.socketHandler, "topic/meal/notification").setAllowedOrigins("*");
     }
 }

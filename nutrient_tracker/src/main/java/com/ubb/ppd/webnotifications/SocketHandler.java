@@ -2,6 +2,7 @@ package com.ubb.ppd.webnotifications;
 
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -16,12 +17,19 @@ public class SocketHandler extends TextWebSocketHandler {
     @Override
     protected void handleTextMessage(@NonNull WebSocketSession session, @NonNull TextMessage message) throws Exception {
         for (WebSocketSession webSocketSession : this.sessions) {
-            webSocketSession.sendMessage(message);
+            if(!webSocketSession.equals(session)) {
+                webSocketSession.sendMessage(message);
+            }
         }
     }
 
     @Override
-    public void afterConnectionEstablished(@NonNull WebSocketSession session) throws Exception {
+    public void afterConnectionEstablished(@NonNull WebSocketSession session) {
         this.sessions.add(session);
+    }
+
+    @Override
+    public void afterConnectionClosed(@NonNull WebSocketSession session, @NonNull CloseStatus status) {
+        this.sessions.remove(session);
     }
 }
