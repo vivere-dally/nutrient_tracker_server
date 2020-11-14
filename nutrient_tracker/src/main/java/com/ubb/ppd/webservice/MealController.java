@@ -1,13 +1,14 @@
 package com.ubb.ppd.webservice;
 
 import com.ubb.ppd.domain.model.dto.MealDTO;
+import com.ubb.ppd.domain.model.notification.Action;
 import com.ubb.ppd.service.MealService;
+import com.ubb.ppd.webnotifications.SocketHandler;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Api(value = "/meal", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -15,9 +16,11 @@ import java.util.List;
 @RequestMapping("/meal")
 @RestController
 public class MealController {
+    private final SocketHandler socketHandler;
     private final MealService mealService;
 
-    public MealController(MealService mealService) {
+    public MealController(SocketHandler socketHandler, MealService mealService) {
+        this.socketHandler = socketHandler;
         this.mealService = mealService;
     }
 
@@ -28,7 +31,7 @@ public class MealController {
     @ApiOperation(value = "returns the meal by the specified id", response = MealDTO.class, produces = MediaType.APPLICATION_JSON_VALUE)
     @GetMapping("/{id}")
     public MealDTO getMealById(
-            @ApiParam(name = "id", type = "long", value = "ID of the meal", example = "1")
+            @ApiParam(name = "id", type = "long", value = "ID of the meal", example = "-1")
             @PathVariable Long id
     ) {
         log.debug("Entered class = MealService & method = getNutrientById");
@@ -55,9 +58,11 @@ public class MealController {
     public MealDTO saveMeal(
             @ApiParam(name = "mealDTO", type = "MealDTO")
             @RequestBody MealDTO mealDTO
-    ) {
+    ) throws Exception {
         log.debug("Entered class = MealService & method = saveMeal");
-        return this.mealService.saveMeal(mealDTO);
+        var result = this.mealService.saveMeal(mealDTO);
+        socketHandler.notifySessions(result, Action.SAVE);
+        return result;
     }
 
     @ApiResponses({
@@ -67,15 +72,16 @@ public class MealController {
     @ApiOperation(value = "returns the updated meal", response = MealDTO.class, produces = MediaType.APPLICATION_JSON_VALUE)
     @PutMapping("/{id}")
     public MealDTO updateMeal(
-            @ApiParam(name = "id", type = "long", value = "ID of the meal", example = "1")
+            @ApiParam(name = "id", type = "long", value = "ID of the meal", example = "-1")
             @PathVariable Long id,
             @ApiParam(name = "mealDTO", type = "MealDTO")
             @RequestBody MealDTO mealDTO
-    ) {
+    ) throws Exception {
         log.debug("Entered class = MealService & method = updateMeal");
         mealDTO.setId(id);
-        mealDTO.setMealDate(LocalDateTime.now());
-        return this.mealService.updateMeal(mealDTO);
+        var result = this.mealService.updateMeal(mealDTO);
+        socketHandler.notifySessions(result, Action.UPDATE);
+        return result;
     }
 
     @ApiResponses({
@@ -85,10 +91,12 @@ public class MealController {
     @ApiOperation(value = "returns the deleted meal", response = MealDTO.class, produces = MediaType.APPLICATION_JSON_VALUE)
     @DeleteMapping("/{id}")
     public MealDTO deleteMeal(
-            @ApiParam(name = "id", type = "long", value = "ID of the meal", example = "1")
+            @ApiParam(name = "id", type = "long", value = "ID of the meal", example = "-1")
             @PathVariable Long id
-    ) {
+    ) throws Exception {
         log.debug("Entered class = MealService & method = deleteMeal");
-        return this.mealService.deleteMeal(this.mealService.getMealById(id));
+        var result = this.mealService.deleteMeal(this.mealService.getMealById(id));
+        socketHandler.notifySessions(result, Action.DELETE);
+        return result;
     }
 }

@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -22,16 +21,17 @@ public class Meal implements Entity<Long> {
     @Column(name = "comment")
     private String comment;
 
-    @Column(name = "meal_date")
-    private LocalDateTime mealDate;
+    @Column(name = "date")
+    private LocalDateTime date;
 
-    @ManyToMany
-    @JoinTable(
-            name = "meals_foods",
-            joinColumns = @JoinColumn(name = "meal_id"),
-            inverseJoinColumns = @JoinColumn(name = "food_id")
-    )
-    private List<Food> foods;
+    @Column(name = "foods")
+    private String foods;
+
+    @Column(name = "eaten")
+    private boolean eaten;
+
+    @Column(name = "price")
+    private float price;
 
     @Override
     public Long getId() {
