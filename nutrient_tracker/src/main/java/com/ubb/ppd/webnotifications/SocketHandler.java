@@ -3,6 +3,7 @@ package com.ubb.ppd.webnotifications;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.ubb.ppd.domain.model.Entity;
+import com.ubb.ppd.domain.model.adapters.LocalDateTimeAdapter;
 import com.ubb.ppd.domain.model.dto.DTO;
 import com.ubb.ppd.domain.model.notification.Action;
 import org.springframework.lang.NonNull;
@@ -13,6 +14,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -20,7 +22,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Component
 public class SocketHandler extends TextWebSocketHandler {
     private final List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
-    private final Gson gson = new GsonBuilder().create();
+    private final Gson gson = new GsonBuilder()
+            .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter().nullSafe())
+            .create();
 
     @Override
     protected void handleTextMessage(@NonNull WebSocketSession session, @NonNull TextMessage message) throws Exception {

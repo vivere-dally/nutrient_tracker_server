@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 
 @Data
@@ -38,7 +40,7 @@ public class MealDTO implements DTO<Meal, Long> {
         this.id = meal.getId();
         this.comment = meal.getComment();
         this.date = meal.getDate();
-        this.dateEpoch = meal.getDate().toEpochSecond(ZoneOffset.UTC);
+        this.dateEpoch = meal.getDate().toEpochSecond(OffsetDateTime.now().getOffset());
         this.foods = meal.getFoods();
         this.eaten = meal.isEaten();
         this.price = meal.getPrice();
