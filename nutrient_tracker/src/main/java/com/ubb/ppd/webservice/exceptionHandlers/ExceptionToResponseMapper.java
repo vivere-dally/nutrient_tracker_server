@@ -2,6 +2,7 @@ package com.ubb.ppd.webservice.exceptionHandlers;
 
 import com.ubb.ppd.domain.exception.MealNotFoundException;
 import com.ubb.ppd.domain.exception.UniqueUsernameException;
+import com.ubb.ppd.domain.exception.UserNotFoundException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.http.HttpStatus;
@@ -60,19 +61,28 @@ public class ExceptionToResponseMapper extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(value = MealNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleMenuItemNotFound(MealNotFoundException menuItemNotFoundException) {
+    public ResponseEntity<ErrorResponse> handleMealNotFound(MealNotFoundException mealNotFoundException) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(),
-                menuItemNotFoundException.getMessage(),
+                mealNotFoundException.getMessage(),
+                System.currentTimeMillis());
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(value = MealNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUserNotFound(UserNotFoundException userNotFoundException) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(),
+                userNotFoundException.getMessage(),
                 System.currentTimeMillis());
 
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(value = UniqueUsernameException.class)
-    public ResponseEntity<ErrorResponse> handleMenuItemNotFound(UniqueUsernameException menuItemNotFoundException) {
+    public ResponseEntity<ErrorResponse> handleUniqueUser(UniqueUsernameException uniqueUsernameException) {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.CONFLICT.value(),
-                menuItemNotFoundException.getMessage(),
+                uniqueUsernameException.getMessage(),
                 System.currentTimeMillis());
 
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);

@@ -33,6 +33,10 @@ public class Meal implements Entity<Long> {
     @Column(name = "price")
     private float price;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @Override
     public Long getId() {
         return this.id;

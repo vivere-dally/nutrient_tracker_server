@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Api(value = "/meal", produces = MediaType.APPLICATION_JSON_VALUE)
+@Api(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 @PreAuthorize("isAuthenticated()")
-@RequestMapping("/meal")
+@RequestMapping("/user/{userId}")
 @RestController
 public class MealController {
     private final SocketHandler socketHandler;
@@ -31,13 +31,15 @@ public class MealController {
             @ApiResponse(code = 500, message = "System Error")
     })
     @ApiOperation(value = "returns the meal by the specified id", response = MealDTO.class, produces = MediaType.APPLICATION_JSON_VALUE)
-    @GetMapping("/{id}")
+    @GetMapping("/meal/{mealId}")
     public MealDTO getMealById(
-            @ApiParam(name = "id", type = "long", value = "ID of the meal", example = "-1")
-            @PathVariable Long id
+            @ApiParam(name = "userId", type = "long", value = "ID of the User", example = "-1")
+            @PathVariable Long userId,
+            @ApiParam(name = "mealId", type = "long", value = "ID of the Meal", example = "-1")
+            @PathVariable Long mealId
     ) {
         log.debug("Entered class = MealService & method = getNutrientById");
-        return this.mealService.getMealById(id);
+        return this.mealService.getMealById(mealId, userId);
     }
 
     @ApiResponses({
@@ -45,10 +47,13 @@ public class MealController {
             @ApiResponse(code = 500, message = "System Error")
     })
     @ApiOperation(value = "returns the meals", response = MealDTO.class, responseContainer = "List", produces = MediaType.APPLICATION_JSON_VALUE)
-    @GetMapping
-    public List<MealDTO> getMeals() {
+    @GetMapping("/meal")
+    public List<MealDTO> getMeals(
+            @ApiParam(name = "userId", type = "long", value = "ID of the User", example = "-1")
+            @PathVariable Long userId
+    ) {
         log.debug("Entered class = MealService & method = getMeals");
-        return this.mealService.getMeals();
+        return this.mealService.getMealsByUserId(userId);
     }
 
     @ApiResponses({
@@ -56,13 +61,15 @@ public class MealController {
             @ApiResponse(code = 500, message = "System Error")
     })
     @ApiOperation(value = "returns the meal with the actual id from the database", response = MealDTO.class, produces = MediaType.APPLICATION_JSON_VALUE)
-    @PostMapping
+    @PostMapping("/meal")
     public MealDTO saveMeal(
+            @ApiParam(name = "userId", type = "long", value = "ID of the User", example = "-1")
+            @PathVariable Long userId,
             @ApiParam(name = "mealDTO", type = "MealDTO")
             @RequestBody MealDTO mealDTO
     ) throws Exception {
         log.debug("Entered class = MealService & method = saveMeal");
-        var result = this.mealService.saveMeal(mealDTO);
+        var result = this.mealService.saveMeal(mealDTO, userId);
         socketHandler.notifySessions(result, Action.SAVE);
         return result;
     }
@@ -72,16 +79,18 @@ public class MealController {
             @ApiResponse(code = 500, message = "System Error")
     })
     @ApiOperation(value = "returns the updated meal", response = MealDTO.class, produces = MediaType.APPLICATION_JSON_VALUE)
-    @PutMapping("/{id}")
+    @PutMapping("/meal/{mealId}")
     public MealDTO updateMeal(
-            @ApiParam(name = "id", type = "long", value = "ID of the meal", example = "-1")
-            @PathVariable Long id,
+            @ApiParam(name = "userId", type = "long", value = "ID of the User", example = "-1")
+            @PathVariable Long userId,
+            @ApiParam(name = "mealId", type = "long", value = "ID of the meal", example = "-1")
+            @PathVariable Long mealId,
             @ApiParam(name = "mealDTO", type = "MealDTO")
             @RequestBody MealDTO mealDTO
     ) throws Exception {
         log.debug("Entered class = MealService & method = updateMeal");
-        mealDTO.setId(id);
-        var result = this.mealService.updateMeal(mealDTO);
+        mealDTO.setId(mealId);
+        var result = this.mealService.updateMeal(mealDTO, userId);
         socketHandler.notifySessions(result, Action.UPDATE);
         return result;
     }
@@ -91,13 +100,15 @@ public class MealController {
             @ApiResponse(code = 500, message = "System Error")
     })
     @ApiOperation(value = "returns the deleted meal", response = MealDTO.class, produces = MediaType.APPLICATION_JSON_VALUE)
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/meal/{mealId}")
     public MealDTO deleteMeal(
-            @ApiParam(name = "id", type = "long", value = "ID of the meal", example = "-1")
-            @PathVariable Long id
+            @ApiParam(name = "userId", type = "long", value = "ID of the User", example = "-1")
+            @PathVariable Long userId,
+            @ApiParam(name = "mealId", type = "long", value = "ID of the meal", example = "-1")
+            @PathVariable Long mealId
     ) throws Exception {
         log.debug("Entered class = MealService & method = deleteMeal");
-        var result = this.mealService.deleteMeal(this.mealService.getMealById(id));
+        var result = this.mealService.deleteMeal(this.mealService.getMealById(mealId, userId), userId);
         socketHandler.notifySessions(result, Action.DELETE);
         return result;
     }

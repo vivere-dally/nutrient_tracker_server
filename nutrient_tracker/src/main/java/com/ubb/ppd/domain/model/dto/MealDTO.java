@@ -34,6 +34,9 @@ public class MealDTO implements DTO<Meal, Long> {
     @ApiModelProperty(example = "6.9", value = "price")
     private float price;
 
+    @ApiModelProperty(example = "1", value = "userId")
+    private long userId;
+
     public MealDTO(Meal meal) {
         this.id = meal.getId();
         this.comment = meal.getComment();
@@ -42,6 +45,7 @@ public class MealDTO implements DTO<Meal, Long> {
         this.foods = meal.getFoods();
         this.eaten = meal.isEaten();
         this.price = meal.getPrice();
+        this.userId = meal.getUser().getId();
     }
 
     @Override
