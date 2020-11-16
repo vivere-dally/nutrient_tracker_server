@@ -69,7 +69,7 @@ public class ExceptionToResponseMapper extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(value = MealNotFoundException.class)
+    @ExceptionHandler(value = UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUserNotFound(UserNotFoundException userNotFoundException) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(),
                 userNotFoundException.getMessage(),
