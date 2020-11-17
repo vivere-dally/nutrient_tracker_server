@@ -26,11 +26,11 @@ public class UserController {
     })
     @ApiOperation(value = "returns the user by the specified username", response = UserDTO.class, produces = MediaType.APPLICATION_JSON_VALUE)
     @GetMapping("/getByUsername")
-    public UserDTO getMealById(
+    public UserDTO getUser(
             @ApiParam(name = "username", type = "String", value = "The username of user", example = "admin")
             @RequestParam(value = "username") String username
     ) {
-        log.debug("Entered class = UserController & method = getMealById");
+        log.debug("Entered class = UserController & method = getUser");
         return this.userService.getUserByUsername(username);
     }
 }

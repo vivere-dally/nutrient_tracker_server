@@ -38,7 +38,7 @@ public class MealController {
             @ApiParam(name = "mealId", type = "long", value = "ID of the Meal", example = "-1")
             @PathVariable Long mealId
     ) {
-        log.debug("Entered class = MealService & method = getNutrientById");
+        log.debug("Entered class = MealController & method = getMealById");
         return this.mealService.getMealById(mealId, userId);
     }
 
@@ -52,8 +52,38 @@ public class MealController {
             @ApiParam(name = "userId", type = "long", value = "ID of the User", example = "-1")
             @PathVariable Long userId
     ) {
-        log.debug("Entered class = MealService & method = getMeals");
+        log.debug("Entered class = MealController & method = getMeals");
         return this.mealService.getMealsByUserId(userId);
+    }
+
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 500, message = "System Error")
+    })
+    @ApiOperation(value = "returns the meals", response = MealDTO.class, responseContainer = "List", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping("/meal/filter")
+    public List<MealDTO> getMealsByComment(
+            @ApiParam(name = "userId", type = "long", value = "ID of the User", example = "-1")
+            @PathVariable Long userId,
+            @ApiParam(name = "comment", type = "String", value = "The comment of meal", example = "salty")
+            @RequestParam(value = "comment") String comment
+    ) {
+        log.debug("Entered class = MealController & method = getMeals");
+        return this.mealService.getMealsByComment(comment, userId);
+    }
+
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 500, message = "System Error")
+    })
+    @ApiOperation(value = "returns the meals", response = MealDTO.class, responseContainer = "List", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping("/meal/eaten")
+    public List<MealDTO> getAllEatenMeals(
+            @ApiParam(name = "userId", type = "long", value = "ID of the User", example = "-1")
+            @PathVariable Long userId
+    ) {
+        log.debug("Entered class = MealController & method = getAllEatenMeals");
+        return this.mealService.getAllEatenMeals(userId);
     }
 
     @ApiResponses({
@@ -68,7 +98,7 @@ public class MealController {
             @ApiParam(name = "mealDTO", type = "MealDTO")
             @RequestBody MealDTO mealDTO
     ) throws Exception {
-        log.debug("Entered class = MealService & method = saveMeal");
+        log.debug("Entered class = MealController & method = saveMeal");
         var result = this.mealService.saveMeal(mealDTO, userId);
         socketHandler.notifySessions(result, Action.SAVE, userId);
         return result;
@@ -88,7 +118,7 @@ public class MealController {
             @ApiParam(name = "mealDTO", type = "MealDTO")
             @RequestBody MealDTO mealDTO
     ) throws Exception {
-        log.debug("Entered class = MealService & method = updateMeal");
+        log.debug("Entered class = MealController & method = updateMeal");
         mealDTO.setId(mealId);
         var result = this.mealService.updateMeal(mealDTO, userId);
         socketHandler.notifySessions(result, Action.UPDATE, userId);
@@ -107,7 +137,7 @@ public class MealController {
             @ApiParam(name = "mealId", type = "long", value = "ID of the meal", example = "-1")
             @PathVariable Long mealId
     ) throws Exception {
-        log.debug("Entered class = MealService & method = deleteMeal");
+        log.debug("Entered class = MealController & method = deleteMeal");
         var result = this.mealService.deleteMeal(this.mealService.getMealById(mealId, userId), userId);
         socketHandler.notifySessions(result, Action.DELETE, userId);
         return result;

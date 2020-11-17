@@ -13,7 +13,9 @@ public interface MealService {
 
     MealDTO getMealById(long id, long userId);
 
-    List<MealDTO> getMeals();
+    List<MealDTO> getMealsByComment(String comment, long userId);
+
+    List<MealDTO> getAllEatenMeals(long userId);
 
     List<MealDTO> getMealsByUserId(long userId);
 }

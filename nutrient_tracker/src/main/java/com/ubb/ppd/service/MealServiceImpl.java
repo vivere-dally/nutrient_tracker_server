@@ -78,9 +78,19 @@ public class MealServiceImpl implements MealService {
     }
 
     @Override
-    public List<MealDTO> getMeals() {
+    public List<MealDTO> getMealsByComment(String comment, long userId) {
         return this.mealRepository.findAll()
                 .stream()
+                .filter(meal -> meal.getUser().getId() == userId && meal.getComment().startsWith(comment))
+                .map(MealDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<MealDTO> getAllEatenMeals(long userId) {
+        return this.mealRepository.findAll()
+                .stream()
+                .filter(meal -> meal.getUser().getId() == userId && meal.isEaten())
                 .map(MealDTO::new)
                 .collect(Collectors.toList());
     }
