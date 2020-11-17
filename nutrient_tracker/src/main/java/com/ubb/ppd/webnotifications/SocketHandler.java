@@ -45,9 +45,13 @@ public class SocketHandler extends TextWebSocketHandler {
         this.sessions.remove(session);
     }
 
-    public <E extends Entity<T>, T extends Serializable> void notifySessions(DTO<E, T> entity, Action action) throws Exception {
+    public <E extends Entity<T>, T extends Serializable> void notifySessions(DTO<E, T> entity, Action action, long userId) throws Exception {
+        var data = new HashMap<String, Object>();
+        data.put("entity", entity);
+        data.put("userId", userId);
+
         var payload = new HashMap<String, Object>();
-        payload.put("data", entity);
+        payload.put("data", data);
         payload.put("actionType", action.toString());
         TextMessage textMessage = new TextMessage(gson.toJson(payload));
         for (WebSocketSession webSocketSession : this.sessions) {

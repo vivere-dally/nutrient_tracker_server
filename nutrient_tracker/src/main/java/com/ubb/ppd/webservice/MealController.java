@@ -70,7 +70,7 @@ public class MealController {
     ) throws Exception {
         log.debug("Entered class = MealService & method = saveMeal");
         var result = this.mealService.saveMeal(mealDTO, userId);
-        socketHandler.notifySessions(result, Action.SAVE);
+        socketHandler.notifySessions(result, Action.SAVE, userId);
         return result;
     }
 
@@ -91,7 +91,7 @@ public class MealController {
         log.debug("Entered class = MealService & method = updateMeal");
         mealDTO.setId(mealId);
         var result = this.mealService.updateMeal(mealDTO, userId);
-        socketHandler.notifySessions(result, Action.UPDATE);
+        socketHandler.notifySessions(result, Action.UPDATE, userId);
         return result;
     }
 
@@ -109,7 +109,7 @@ public class MealController {
     ) throws Exception {
         log.debug("Entered class = MealService & method = deleteMeal");
         var result = this.mealService.deleteMeal(this.mealService.getMealById(mealId, userId), userId);
-        socketHandler.notifySessions(result, Action.DELETE);
+        socketHandler.notifySessions(result, Action.DELETE, userId);
         return result;
     }
 }
