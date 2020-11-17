@@ -10,6 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDTO implements DTO<User, Long> {
+    @ApiModelProperty(required = true, example = "1", value = "id")
+    private long id;
+
     @ApiModelProperty(required = true, example = "admin", value = "username")
     private String username;
 
@@ -17,6 +20,7 @@ public class UserDTO implements DTO<User, Long> {
     private String password;
 
     public UserDTO(User user) {
+        this.id = user.getId();
         this.username = user.getUsername();
         this.password = user.getPassword();
     }
@@ -24,6 +28,7 @@ public class UserDTO implements DTO<User, Long> {
     @Override
     public User toEntity() {
         User user = new User();
+        user.setId(id);
         user.setUsername(username);
         user.setPassword(password);
         return user;

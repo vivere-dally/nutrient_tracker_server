@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Api(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
+@Api(value = "/user/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 @PreAuthorize("isAuthenticated()")
 @RequestMapping("/user/{userId}")

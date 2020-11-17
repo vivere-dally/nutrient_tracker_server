@@ -1,6 +1,7 @@
 package com.ubb.ppd.service;
 
 import com.ubb.ppd.domain.exception.UniqueUsernameException;
+import com.ubb.ppd.domain.exception.UserNotFoundException;
 import com.ubb.ppd.domain.model.SecurityUser;
 import com.ubb.ppd.domain.model.User;
 import com.ubb.ppd.domain.model.dto.UserDTO;
@@ -29,6 +30,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         } catch (DataIntegrityViolationException exception) {
             throw new UniqueUsernameException("This username already exists.");
         }
+    }
+
+    @Override
+    public UserDTO getUserByUsername(String username) {
+        return this.userRepository
+                .findByUsername(username)
+                .map(UserDTO::new)
+                .orElseThrow(() -> new UserNotFoundException("Username was not found!"));
     }
 
     @Override
