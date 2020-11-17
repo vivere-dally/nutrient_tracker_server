@@ -49,11 +49,15 @@ public class MealController {
     @ApiOperation(value = "returns the meals", response = MealDTO.class, responseContainer = "List", produces = MediaType.APPLICATION_JSON_VALUE)
     @GetMapping("/meal")
     public List<MealDTO> getMeals(
+            @ApiParam(name = "page", type = "Integer", value = "Number of the page", example = "2")
+            @RequestParam(required = false) Integer page,
+            @ApiParam(name = "size", type = "Integer", value = "The size of one page", example = "5")
+            @RequestParam(required = false) Integer size,
             @ApiParam(name = "userId", type = "long", value = "ID of the User", example = "-1")
             @PathVariable Long userId
     ) {
         log.debug("Entered class = MealController & method = getMeals");
-        return this.mealService.getMealsByUserId(userId);
+        return this.mealService.getMealsByUserId(page, size, userId);
     }
 
     @ApiResponses({

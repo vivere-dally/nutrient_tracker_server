@@ -7,9 +7,12 @@ import com.ubb.ppd.domain.model.User;
 import com.ubb.ppd.domain.model.dto.MealDTO;
 import com.ubb.ppd.repository.MealRepository;
 import com.ubb.ppd.repository.UserRepository;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -96,8 +99,28 @@ public class MealServiceImpl implements MealService {
     }
 
     @Override
-    public List<MealDTO> getMealsByUserId(long userId) {
-        return this.mealRepository.findAll()
+    public List<MealDTO> getMealsByUserId(Integer page, Integer size, long userId) {
+        Optional<Integer> pageOptional = Optional.ofNullable(page);
+        Optional<Integer> sizeOptional = Optional.ofNullable(size);
+        if (pageOptional.isEmpty() && sizeOptional.isPresent()) {
+            throw new IllegalArgumentException("While page is null size cannot have a value");
+        }
+
+        User user = this.userRepository
+                .findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("The user with the given ID was not found!"));
+
+        if (pageOptional.isPresent() && sizeOptional.isEmpty()) {
+            sizeOptional = Optional.of(5);
+        }
+
+        Pageable pageable = PageRequest.of(
+                pageOptional.orElse(0),
+                sizeOptional.orElse(Integer.MAX_VALUE)
+        );
+
+        return this.mealRepository.findAllByUser(user, pageable)
+                .getContent()
                 .stream()
                 .map(MealDTO::new)
                 .filter(meal -> meal.getUserId() == userId)

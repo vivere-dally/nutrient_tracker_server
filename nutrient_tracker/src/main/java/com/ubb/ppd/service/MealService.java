@@ -17,5 +17,5 @@ public interface MealService {
 
     List<MealDTO> getAllEatenMeals(long userId);
 
-    List<MealDTO> getMealsByUserId(long userId);
+    List<MealDTO> getMealsByUserId(Integer page, Integer size, long userId);
 }
