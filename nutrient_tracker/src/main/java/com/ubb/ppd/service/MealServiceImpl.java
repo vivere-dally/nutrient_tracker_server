@@ -9,8 +9,10 @@ import com.ubb.ppd.repository.MealRepository;
 import com.ubb.ppd.repository.UserRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,6 +31,13 @@ public class MealServiceImpl implements MealService {
         Meal meal = mealDTO.toEntity();
         meal.setUser(user);
         return meal;
+    }
+
+    private List<Sort.Order> getSorting(String sortBy) {
+        return Arrays.stream(sortBy.split(","))
+                .map(item -> item.split("\\."))
+                .map(item -> new Sort.Order(Sort.Direction.fromString(item[1]), item[0]))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -99,9 +108,10 @@ public class MealServiceImpl implements MealService {
     }
 
     @Override
-    public List<MealDTO> getMealsByUserId(Integer page, Integer size, long userId) {
+    public List<MealDTO> getMealsByUserId(Integer page, Integer size, String sortBy, long userId) {
         Optional<Integer> pageOptional = Optional.ofNullable(page);
         Optional<Integer> sizeOptional = Optional.ofNullable(size);
+        Optional<String> sortByOptional = Optional.ofNullable(sortBy);
         if (pageOptional.isEmpty() && sizeOptional.isPresent()) {
             throw new IllegalArgumentException("While page is null size cannot have a value");
         }
@@ -116,7 +126,8 @@ public class MealServiceImpl implements MealService {
 
         Pageable pageable = PageRequest.of(
                 pageOptional.orElse(0),
-                sizeOptional.orElse(Integer.MAX_VALUE)
+                sizeOptional.orElse(Integer.MAX_VALUE),
+                sortByOptional.map(sort -> Sort.by(getSorting(sort))).orElse(Sort.unsorted())
         );
 
         return this.mealRepository.findAllByUser(user, pageable)

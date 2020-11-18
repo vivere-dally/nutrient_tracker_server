@@ -53,11 +53,13 @@ public class MealController {
             @RequestParam(required = false) Integer page,
             @ApiParam(name = "size", type = "Integer", value = "The size of one page", example = "5")
             @RequestParam(required = false) Integer size,
+            @ApiParam(name = "sortBy", type = "String", value = "sort criteria", example = "name.asc,price.desc")
+            @RequestParam(required = false) String sortBy,
             @ApiParam(name = "userId", type = "long", value = "ID of the User", example = "-1")
             @PathVariable Long userId
     ) {
         log.debug("Entered class = MealController & method = getMeals");
-        return this.mealService.getMealsByUserId(page, size, userId);
+        return this.mealService.getMealsByUserId(page, size, sortBy, userId);
     }
 
     @ApiResponses({
