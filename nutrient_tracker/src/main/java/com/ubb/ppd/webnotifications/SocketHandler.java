@@ -18,10 +18,12 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Component
 public class SocketHandler extends TextWebSocketHandler {
     private final List<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
+    private final ReentrantLock reentrantLock = new ReentrantLock(true);
     public final Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter().nullSafe())
             .create();
@@ -55,7 +57,9 @@ public class SocketHandler extends TextWebSocketHandler {
         payload.put("actionType", action.toString());
         TextMessage textMessage = new TextMessage(gson.toJson(payload));
         for (WebSocketSession webSocketSession : this.sessions) {
+            reentrantLock.lock();
             webSocketSession.sendMessage(textMessage);
+            reentrantLock.unlock();
         }
     }
 }
