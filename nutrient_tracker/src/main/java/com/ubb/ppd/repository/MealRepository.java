@@ -7,5 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.domain.Pageable;
 
 public interface MealRepository extends JpaRepository<Meal, Long> {
-    Page<Meal> findAllByUser(User user, Pageable pageable);
+    Page<Meal> findAllByUserAndCommentStartsWithAndEaten(User user, String comment, Boolean eaten, Pageable pageable);
+
+    Page<Meal> findAllByUserAndCommentStartsWith(User user, String comment, Pageable pageable);
 }

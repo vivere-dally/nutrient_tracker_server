@@ -57,9 +57,12 @@ public class SocketHandler extends TextWebSocketHandler {
         payload.put("actionType", action.toString());
         TextMessage textMessage = new TextMessage(gson.toJson(payload));
         for (WebSocketSession webSocketSession : this.sessions) {
-            reentrantLock.lock();
-            webSocketSession.sendMessage(textMessage);
-            reentrantLock.unlock();
+            try {
+                reentrantLock.lock();
+                webSocketSession.sendMessage(textMessage);
+            } finally {
+                reentrantLock.unlock();
+            }
         }
     }
 }

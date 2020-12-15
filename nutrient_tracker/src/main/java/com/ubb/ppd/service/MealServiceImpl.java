@@ -90,25 +90,7 @@ public class MealServiceImpl implements MealService {
     }
 
     @Override
-    public List<MealDTO> getMealsByComment(String comment, long userId) {
-        return this.mealRepository.findAll()
-                .stream()
-                .filter(meal -> meal.getUser().getId() == userId && meal.getComment().startsWith(comment))
-                .map(MealDTO::new)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<MealDTO> getAllEatenMeals(long userId) {
-        return this.mealRepository.findAll()
-                .stream()
-                .filter(meal -> meal.getUser().getId() == userId && meal.isEaten())
-                .map(MealDTO::new)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<MealDTO> getMealsByUserId(Integer page, Integer size, String sortBy, long userId) {
+    public List<MealDTO> getMealsByUserId(Integer page, Integer size, String sortBy, String byComment, Boolean isEaten, long userId) {
         Optional<Integer> pageOptional = Optional.ofNullable(page);
         Optional<Integer> sizeOptional = Optional.ofNullable(size);
         Optional<String> sortByOptional = Optional.ofNullable(sortBy);
@@ -119,7 +101,6 @@ public class MealServiceImpl implements MealService {
         User user = this.userRepository
                 .findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("The user with the given ID was not found!"));
-
         if (pageOptional.isPresent() && sizeOptional.isEmpty()) {
             sizeOptional = Optional.of(5);
         }
@@ -130,11 +111,21 @@ public class MealServiceImpl implements MealService {
                 sortByOptional.map(sort -> Sort.by(getSorting(sort))).orElse(Sort.unsorted())
         );
 
-        return this.mealRepository.findAllByUser(user, pageable)
-                .getContent()
+        if (byComment == null) {
+            byComment = "";
+        }
+
+        List<Meal> result;
+        if (isEaten != null) {
+            result = this.mealRepository.findAllByUserAndCommentStartsWithAndEaten(user, byComment, isEaten, pageable).getContent();
+        }
+        else {
+            result = this.mealRepository.findAllByUserAndCommentStartsWith(user, byComment, pageable).getContent();
+        }
+
+        return result
                 .stream()
                 .map(MealDTO::new)
-                .filter(meal -> meal.getUserId() == userId)
                 .collect(Collectors.toList());
     }
 }

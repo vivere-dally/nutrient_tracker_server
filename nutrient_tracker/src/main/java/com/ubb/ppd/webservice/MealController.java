@@ -38,80 +38,37 @@ public class MealController {
         this.mealService = mealService;
     }
 
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 500, message = "System Error")
-    })
-    @ApiOperation(value = "returns the meal by the specified id", response = MealDTO.class, produces = MediaType.APPLICATION_JSON_VALUE)
-    @GetMapping("/meal/{mealId}")
-    public MealDTO getMealById(
-            @ApiParam(name = "userId", type = "long", value = "ID of the User", example = "-1")
-            @PathVariable Long userId,
-            @ApiParam(name = "mealId", type = "long", value = "ID of the Meal", example = "-1")
-            @PathVariable Long mealId,
-            HttpServletResponse response
-    ) {
-        log.debug("Entered class = MealController & method = getMealById");
-        response.setHeader("Access-Control-Expose-Headers", "ETag");
-        return this.mealService.getMealById(mealId, userId);
-    }
-
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 500, message = "System Error")
-    })
-    @ApiOperation(value = "returns the meals", response = MealDTO.class, responseContainer = "List", produces = MediaType.APPLICATION_JSON_VALUE)
     @GetMapping("/meal")
-    public List<MealDTO> getMeals(
+    public List<MealDTO> getFiltered(
+            // Pagination
             @ApiParam(name = "page", type = "Integer", value = "Number of the page", example = "2")
             @RequestParam(required = false) Integer page,
             @ApiParam(name = "size", type = "Integer", value = "The size of one page", example = "5")
             @RequestParam(required = false) Integer size,
+
+            // Filters
             @ApiParam(name = "sortBy", type = "String", value = "sort criteria", example = "name.asc,price.desc")
             @RequestParam(required = false) String sortBy,
+
+            @ApiParam(name = "byComment", type = "String", value = "The comment of meal", example = "salty")
+            @RequestParam(required = false) String byComment,
+
+            @ApiParam(name = "isEaten", type = "Boolean", value = "is the meal eaten", example = "true")
+            @RequestParam(required = false) Boolean isEaten,
+
+            // User
             @ApiParam(name = "userId", type = "long", value = "ID of the User", example = "-1")
             @PathVariable Long userId,
+
+            // Response
             HttpServletResponse response
     ) {
-        log.debug("Entered class = MealController & method = getMeals");
+        log.debug("Entered class = MealController & method = getFiltered");
         response.setHeader("Access-Control-Expose-Headers", "ETag");
-        return this.mealService.getMealsByUserId(page, size, sortBy, userId);
+        return this.mealService.getMealsByUserId(page, size, sortBy, byComment, isEaten, userId);
     }
 
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 500, message = "System Error")
-    })
-    @ApiOperation(value = "returns the meals", response = MealDTO.class, responseContainer = "List", produces = MediaType.APPLICATION_JSON_VALUE)
-    @GetMapping("/meal/filter")
-    public List<MealDTO> getMealsByComment(
-            @ApiParam(name = "userId", type = "long", value = "ID of the User", example = "-1")
-            @PathVariable Long userId,
-            @ApiParam(name = "comment", type = "String", value = "The comment of meal", example = "salty")
-            @RequestParam(value = "comment") String comment,
-            HttpServletResponse response
-    ) {
-        log.debug("Entered class = MealController & method = getMeals");
-        response.setHeader("Access-Control-Expose-Headers", "ETag");
-        return this.mealService.getMealsByComment(comment, userId);
-    }
-
-    @ApiResponses({
-            @ApiResponse(code = 200, message = "OK"),
-            @ApiResponse(code = 500, message = "System Error")
-    })
-    @ApiOperation(value = "returns the meals", response = MealDTO.class, responseContainer = "List", produces = MediaType.APPLICATION_JSON_VALUE)
-    @GetMapping("/meal/eaten")
-    public List<MealDTO> getAllEatenMeals(
-            @ApiParam(name = "userId", type = "long", value = "ID of the User", example = "-1")
-            @PathVariable Long userId,
-            HttpServletResponse response
-    ) {
-        log.debug("Entered class = MealController & method = getAllEatenMeals");
-        response.setHeader("Access-Control-Expose-Headers", "ETag");
-        return this.mealService.getAllEatenMeals(userId);
-    }
-
+    //region CRUD
     @ApiResponses({
             @ApiResponse(code = 200, message = "OK"),
             @ApiResponse(code = 500, message = "System Error")
@@ -130,6 +87,24 @@ public class MealController {
         var result = this.mealService.saveMeal(mealDTO, userId);
         socketHandler.notifySessions(result, Action.SAVE, userId);
         return result;
+    }
+
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "OK"),
+            @ApiResponse(code = 500, message = "System Error")
+    })
+    @ApiOperation(value = "returns the meal by the specified id", response = MealDTO.class, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping("/meal/{mealId}")
+    public MealDTO getMealById(
+            @ApiParam(name = "userId", type = "long", value = "ID of the User", example = "-1")
+            @PathVariable Long userId,
+            @ApiParam(name = "mealId", type = "long", value = "ID of the Meal", example = "-1")
+            @PathVariable Long mealId,
+            HttpServletResponse response
+    ) {
+        log.debug("Entered class = MealController & method = getMealById");
+        response.setHeader("Access-Control-Expose-Headers", "ETag");
+        return this.mealService.getMealById(mealId, userId);
     }
 
     @ApiResponses({
@@ -182,4 +157,6 @@ public class MealController {
         socketHandler.notifySessions(result, Action.DELETE, userId);
         return result;
     }
+
+    //endregion
 }
