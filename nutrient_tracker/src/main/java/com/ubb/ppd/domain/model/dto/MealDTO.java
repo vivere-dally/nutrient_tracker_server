@@ -6,8 +6,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.Base64;
 
 @Data
 @AllArgsConstructor
@@ -34,6 +38,15 @@ public class MealDTO implements DTO<Meal, Long> {
     @ApiModelProperty(example = "6.9", value = "price")
     private float price;
 
+    @ApiModelProperty(example = "base64String", value = "photo")
+    private String photo;
+
+    @ApiModelProperty(example = "69.6969696969", value = "latitude")
+    private double latitude;
+
+    @ApiModelProperty(example = "42.0420420420", value = "longitude")
+    private double longitude;
+
     @ApiModelProperty(example = "1", value = "userId")
     private long userId;
 
@@ -45,6 +58,14 @@ public class MealDTO implements DTO<Meal, Long> {
         this.foods = meal.getFoods();
         this.eaten = meal.isEaten();
         this.price = meal.getPrice();
+        try {
+            this.photo = new String(Base64.getDecoder().decode(new String(meal.getPhoto()).getBytes(StandardCharsets.UTF_8)));
+        } catch (Exception e) {
+            this.photo = null;
+        }
+
+        this.latitude = meal.getLatitude();
+        this.longitude = meal.getLongitude();
         this.userId = meal.getUser().getId();
     }
 
@@ -57,6 +78,16 @@ public class MealDTO implements DTO<Meal, Long> {
         meal.setFoods(this.foods);
         meal.setEaten(this.eaten);
         meal.setPrice(this.price);
+        byte[] photo;
+        try {
+            photo = Base64.getEncoder().encode(this.photo.getBytes());
+        } catch (Exception e) {
+            photo = new byte[0];
+        }
+
+        meal.setLatitude(this.latitude);
+        meal.setLongitude(this.longitude);
+        meal.setPhoto(photo);
         return meal;
     }
 }

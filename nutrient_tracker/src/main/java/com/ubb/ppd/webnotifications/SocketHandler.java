@@ -26,6 +26,7 @@ public class SocketHandler extends TextWebSocketHandler {
     private final ReentrantLock reentrantLock = new ReentrantLock(true);
     public final Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter().nullSafe())
+            .serializeNulls()
             .create();
 
     @Override

@@ -3,6 +3,7 @@ package com.ubb.ppd.domain.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -32,6 +33,18 @@ public class Meal implements Entity<Long> {
 
     @Column(name = "price")
     private float price;
+
+    @Lob
+    @Basic(fetch = FetchType.EAGER)
+    @Type(type = "org.hibernate.type.ImageType")
+    @Column(name = "photo", columnDefinition = "bytea")
+    private byte[] photo;
+
+    @Column(name = "latitude")
+    private double latitude;
+
+    @Column(name = "longitude")
+    private double longitude;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

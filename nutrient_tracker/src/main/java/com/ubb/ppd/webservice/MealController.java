@@ -128,7 +128,7 @@ public class MealController {
         MealDTO serverEntity = this.mealService.getMealById(mealId, userId);
         String serverEntityETag = "\"0" + getMD5Hash(socketHandler.gson.toJson(serverEntity)) + "\"";
         if (etag != null && !serverEntityETag.equals(etag)) {
-            response.setStatus(412);
+             response.setStatus(412);
             return serverEntity;
         }
 
