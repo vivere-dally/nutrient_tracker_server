@@ -50,6 +50,10 @@ public class Meal implements Entity<Long> {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Version
+    @Column(name = "u_lmod_id", columnDefinition = "integer DEFAULT 0", nullable = false)
+    private long version;
+
     @Override
     public Long getId() {
         return this.id;
